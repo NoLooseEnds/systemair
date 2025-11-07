@@ -76,6 +76,43 @@ ENTITY_DESCRIPTIONS = (
         registry=parameter_map["REG_SENSOR_RHS_PDM"],
     ),
     SystemairSensorEntityDescription(
+        key="efficiency_temperature",
+        translation_key="efficiency_temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        registry=parameter_map["REG_SENSOR_EFFICIENCY_TEMP"],
+    ),
+    SystemairSensorEntityDescription(
+        key="overheat_temperature_alt",
+        translation_key="overheat_temperature_alt",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        registry=parameter_map["REG_SENSOR_OHT_ALT"],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="calculated_moisture_extraction",
+        translation_key="calculated_moisture_extraction",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        registry=parameter_map["REG_SENSOR_CALC_MOISTURE_EXTRACTION"],
+    ),
+    SystemairSensorEntityDescription(
+        key="calculated_moisture_intake",
+        translation_key="calculated_moisture_intake",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        registry=parameter_map["REG_SENSOR_CALC_MOISTURE_INTAKE"],
+    ),
+    SystemairSensorEntityDescription(
+        key="supply_air_fan_power_factor",
+        translation_key="supply_air_fan_power_factor",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        registry=parameter_map["REG_OUTPUT_SAF_POWER_FACTOR"],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
         key="meter_saf_rpm",
         translation_key="meter_saf_rpm",
         state_class=SensorStateClass.MEASUREMENT,
@@ -168,7 +205,14 @@ class SystemairSensor(SystemairEntity, SensorEntity):
     @property
     def native_value(self) -> str | None:
         """Return the native value of the sensor."""
-        value = self.coordinator.get_modbus_data(self.entity_description.registry)
+        value = self.coordinator.get_modbus_data(
+            self.entity_description.registry,
+            default=None,
+            log_missing=True,
+        )
+
+        if value is None:
+            return None
 
         if self.device_class == SensorDeviceClass.ENUM:
             value = int(value)
