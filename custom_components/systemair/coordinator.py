@@ -11,7 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .api import (
     SystemairApiClientError,
 )
-from .const import DOMAIN, LOGGER
+from .const import DOMAIN, LOGGER, SystemairModel
 from .modbus import IntegerType, parameter_map
 
 if TYPE_CHECKING:
@@ -35,6 +35,7 @@ class SystemairDataUpdateCoordinator(DataUpdateCoordinator):
 
     config_entry: SystemairConfigEntry
     modbus_parameters: list[ModbusParameter]
+    _model: SystemairModel | None = None
 
     def __init__(
         self,
@@ -48,6 +49,15 @@ class SystemairDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=10),
         )
         self.modbus_parameters = []
+
+    @property
+    def model(self) -> SystemairModel:
+        """Get the detected Systemair model."""
+        if self._model is None:
+            model_string = self.config_entry.runtime_data.mb_model
+            self._model = SystemairModel.from_string(model_string)
+            LOGGER.info("Detected Systemair model: %s (from: %s)", self._model.value, model_string)
+        return self._model
 
     def register_modbus_parameters(self, modbus_parameter: ModbusParameter) -> None:
         """Register a list of Modbus parameters to be updated."""
@@ -111,6 +121,9 @@ class SystemairDataUpdateCoordinator(DataUpdateCoordinator):
         self.config_entry.runtime_data.mb_model = unit_version["MB Model"]
         self.config_entry.runtime_data.mb_sw_version = unit_version["MB SW version"]
         self.config_entry.runtime_data.iam_sw_version = unit_version["IAM SW version"]
+
+        # Initialize model detection
+        _ = self.model  # This will log the detected model
 
         # Required for setup of climate entity
         self.register_modbus_parameters(parameter_map["REG_FUNCTION_ACTIVE_HEATER"])
