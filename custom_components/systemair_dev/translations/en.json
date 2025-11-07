@@ -55,6 +55,15 @@
             },
             "time_delay_crowded": {
                 "name": "Crowded: Time delay"
+            },
+            "eco_heat_offset": {
+                "name": "Eco heat offset"
+            },
+            "filter_replacement_period": {
+                "name": "Filter replacement period"
+            },
+            "moisture_extraction_setpoint": {
+                "name": "Moisture extraction setpoint"
             }
         },
         "sensor": {

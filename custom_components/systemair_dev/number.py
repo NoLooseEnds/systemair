@@ -9,7 +9,7 @@ from homeassistant.components.number import (
     NumberEntityDescription,
     NumberMode,
 )
-from homeassistant.const import EntityCategory, UnitOfTime
+from homeassistant.const import EntityCategory, PERCENTAGE, REVOLUTIONS_PER_MINUTE, UnitOfTemperature, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -78,6 +78,33 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfTime.HOURS,
         registry=parameter_map["REG_USERMODE_CROWDED_TIME"],
     ),
+    SystemairNumberEntityDescription(
+        key="eco_heat_offset",
+        translation_key="eco_heat_offset",
+        entity_category=EntityCategory.CONFIG,
+        native_step=0.1,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        registry=parameter_map["REG_ECO_HEAT_OFFSET"],
+    ),
+    SystemairNumberEntityDescription(
+        key="filter_replacement_period",
+        translation_key="filter_replacement_period",
+        entity_category=EntityCategory.CONFIG,
+        native_step=1,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement="months",
+        registry=parameter_map["REG_FILTER_REPLACEMENT_PERIOD"],
+    ),
+    SystemairNumberEntityDescription(
+        key="moisture_extraction_setpoint",
+        translation_key="moisture_extraction_setpoint",
+        entity_category=EntityCategory.CONFIG,
+        native_step=1,
+        mode=NumberMode.SLIDER,
+        native_unit_of_measurement=PERCENTAGE,
+        registry=parameter_map["REG_MOISTURE_EXTRACTION_SP"],
+    ),
 )
 
 
@@ -113,8 +140,12 @@ class SystemairNumber(SystemairEntity, NumberEntity):
 
         self.entity_description = entity_description
         self._attr_unique_id = f"{coordinator.config_entry.entry_id}-{entity_description.key}"
-        self.native_min_value = float(entity_description.registry.min_value or 0)
-        self.native_max_value = float(entity_description.registry.max_value or 100)
+        # Account for scale_factor in min/max values
+        scale = entity_description.registry.scale_factor or 1
+        min_val = entity_description.registry.min_value or 0
+        max_val = entity_description.registry.max_value or 100
+        self.native_min_value = float(min_val) / scale
+        self.native_max_value = float(max_val) / scale
 
     @property
     def native_value(self) -> float:
