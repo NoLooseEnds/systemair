@@ -198,6 +198,45 @@ ENTITY_DESCRIPTIONS = (
         registry=parameter_map["REG_FILTER_REMAINING_TIME_L"],
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
+    SystemairSensorEntityDescription(
+        key="mode_remaining_time",
+        translation_key="mode_remaining_time",
+        device_class=SensorDeviceClass.DURATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="countdown_away",
+        translation_key="countdown_away",
+        registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="countdown_crowded",
+        translation_key="countdown_crowded",
+        registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="countdown_refresh",
+        translation_key="countdown_refresh",
+        registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="countdown_fireplace",
+        translation_key="countdown_fireplace",
+        registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="countdown_holiday",
+        translation_key="countdown_holiday",
+        registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
     *(
         SystemairSensorEntityDescription(
             key=f"alarm_{param.short.lower()}",
@@ -261,6 +300,10 @@ class SystemairSensor(SystemairEntity, SensorEntity):
         # Calculated recovery rate
         if self.entity_description.key == "recovery_rate":
             return self._get_recovery_rate()
+
+        # Countdown timers for modes
+        if self.entity_description.key.startswith("countdown_"):
+            return self._get_countdown_timer(self.entity_description.key)
 
         value = self.coordinator.get_modbus_data(
             self.entity_description.registry,
@@ -334,6 +377,61 @@ class SystemairSensor(SystemairEntity, SensorEntity):
             ((float(supply_temp) - float(outdoor_temp)) / temp_diff) * 100
         )
         return str(round(recovery_rate, 1))
+
+    def _get_countdown_timer(self, sensor_key: str) -> str:
+        """Format countdown timer for a specific mode."""
+        # Map sensor keys to mode values (from PRESET_MODE_TO_VALUE_MAP)
+        mode_map = {
+            "countdown_away": 6,
+            "countdown_crowded": 3,
+            "countdown_refresh": 4,
+            "countdown_fireplace": 5,
+            "countdown_holiday": 7,
+        }
+        expected_mode = mode_map.get(sensor_key)
+        if expected_mode is None:
+            return None
+
+        # Get current mode (register value is 1-indexed, so subtract 1 for comparison)
+        current_mode = self.coordinator.get_modbus_data(
+            parameter_map["REG_USERMODE_MODE"],
+            default=None,
+            log_missing=False,
+        )
+        if current_mode is None:
+            return None
+
+        # Check if this mode is active (mode register is 1-indexed)
+        if int(current_mode) != expected_mode:
+            return "Inactive"
+
+        # Get remaining time in seconds
+        remaining_seconds = self.coordinator.get_modbus_data(
+            parameter_map["REG_USERMODE_REMAINING_TIME_L"],
+            default=None,
+            log_missing=False,
+        )
+        if remaining_seconds is None or remaining_seconds <= 0:
+            return "Inactive"
+
+        # Format time as "X h Y min" or "X days" or "Less than 1 minute"
+        seconds = int(remaining_seconds)
+        if seconds < 60:
+            return "Less than 1 minute"
+
+        days = seconds // 86400
+        hours = (seconds % 86400) // 3600
+        minutes = (seconds % 3600) // 60
+
+        parts = []
+        if days > 0:
+            parts.append(f"{days} day{'s' if days != 1 else ''}")
+        if hours > 0:
+            parts.append(f"{hours} h")
+        if minutes > 0 and days == 0:  # Only show minutes if not showing days
+            parts.append(f"{minutes} min")
+
+        return " ".join(parts) if parts else "Less than 1 minute"
 
     def _get_enhanced_mode_status(self) -> str:
         """Get enhanced mode status by combining mode register with manual command register."""

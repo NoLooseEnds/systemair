@@ -99,6 +99,24 @@
             },
             "filter_remaining_time": {
                 "name": "Filter remaining time"
+            },
+            "mode_remaining_time": {
+                "name": "Mode remaining time"
+            },
+            "countdown_away": {
+                "name": "Time remaining when active - Away"
+            },
+            "countdown_crowded": {
+                "name": "Time remaining when active - Crowded"
+            },
+            "countdown_refresh": {
+                "name": "Time remaining when active - Refresh"
+            },
+            "countdown_fireplace": {
+                "name": "Time remaining when active - Fireplace"
+            },
+            "countdown_holiday": {
+                "name": "Time remaining when active - Holiday"
             }
         },
         "switch": {
