@@ -36,6 +36,7 @@ class SystemairDataUpdateCoordinator(DataUpdateCoordinator):
     config_entry: SystemairConfigEntry
     modbus_parameters: list[ModbusParameter]
     _model: SystemairModel | None = None
+    _missing_registers: set[str]
 
     def __init__(
         self,
@@ -49,6 +50,7 @@ class SystemairDataUpdateCoordinator(DataUpdateCoordinator):
             update_interval=timedelta(seconds=10),
         )
         self.modbus_parameters = []
+        self._missing_registers = set()
 
     @property
     def model(self) -> SystemairModel:
@@ -73,21 +75,75 @@ class SystemairDataUpdateCoordinator(DataUpdateCoordinator):
             if combine_with and combine_with not in self.modbus_parameters:
                 self.modbus_parameters.append(combine_with)
 
-    def get_modbus_data(self, register: ModbusParameter) -> float:
-        """Get the data for a Modbus register."""
+    def is_register_available(self, register: ModbusParameter) -> bool:
+        """Check if a register is available in the current data."""
+        if self.data is None:
+            return False
+        register_key = str(register.register - 1)
+        return register_key in self.data
+
+    def get_modbus_data(
+        self,
+        register: ModbusParameter,
+        *,
+        default: float | None = 0,
+        log_missing: bool = True,
+    ) -> float | None:
+        """
+        Get the data for a Modbus register.
+
+        Args:
+            register: The Modbus parameter to read
+            default: Default value to return if register is missing (None to return None)
+            log_missing: Whether to log a warning if register is missing (only logs once per register)
+
+        Returns:
+            The register value, or default/None if register is not available
+        """
         self.register_modbus_parameters(register)
-        value = self.data.get(str(register.register - 1))
+        
+        if self.data is None:
+            if log_missing and register.short not in self._missing_registers:
+                LOGGER.warning(
+                    "Register %s (%s) not available - data not yet loaded",
+                    register.short,
+                    register.register,
+                )
+                self._missing_registers.add(register.short)
+            return default
+
+        register_key = str(register.register - 1)
+        value = self.data.get(register_key)
 
         if value is None:
-            return 0
+            if log_missing and register.short not in self._missing_registers:
+                LOGGER.debug(
+                    "Register %s (%s) not available for model %s - may not be supported",
+                    register.short,
+                    register.register,
+                    self.model.value,
+                )
+                self._missing_registers.add(register.short)
+            return default
+
         if register.boolean:
             return value != 0
+        
         value = int(value)
 
         if register.combine_with_32_bit:
-            high = self.data.get(str(register.combine_with_32_bit - 1))
+            high_key = str(register.combine_with_32_bit - 1)
+            high = self.data.get(high_key)
             if high is None:
-                return 0
+                if log_missing and register.short not in self._missing_registers:
+                    LOGGER.debug(
+                        "Register %s (%s) high word not available for model %s",
+                        register.short,
+                        register.combine_with_32_bit,
+                        self.model.value,
+                    )
+                    self._missing_registers.add(register.short)
+                return default
             value += int(high) << 16
 
         if register.sig == IntegerType.INT and value > (1 << 15):
