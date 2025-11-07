@@ -2,6 +2,5 @@
     "name": "systemair-dev",
     "hide_default_branch": true,
     "homeassistant": "2024.8.0",
-    "render_readme": true,
-    "filename": "custom_components/systemair_dev/manifest.json"
+    "render_readme": true
 }
