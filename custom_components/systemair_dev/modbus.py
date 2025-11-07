@@ -527,6 +527,16 @@ parameters_list = [
         description="Enabling of eco mode",
         boolean=True,
     ),
+    ModbusParameter(
+        register=2503,
+        sig=IntegerType.INT,
+        reg_type=RegisterType.Holding,
+        short="REG_ECO_HEAT_OFFSET",
+        description="Temperature offset for heating during Eco mode",
+        scale_factor=10,
+        min_value=0,
+        max_value=100,
+    ),
     # Free Cooling
     ModbusParameter(
         register=4100,
@@ -552,6 +562,25 @@ parameters_list = [
         short="REG_FILTER_REMAINING_TIME_H",
         description="Remaining filter time in seconds, higher 16 bits",
         combine_with_32_bit=7005,
+    ),
+    ModbusParameter(
+        register=7000,
+        sig=IntegerType.INT,
+        reg_type=RegisterType.Holding,
+        short="REG_FILTER_REPLACEMENT_PERIOD",
+        description="Filter replacement period in months",
+        min_value=3,
+        max_value=15,
+    ),
+    # Moisture extraction setpoint
+    ModbusParameter(
+        register=2202,
+        sig=IntegerType.UINT,
+        reg_type=RegisterType.Holding,
+        short="REG_MOISTURE_EXTRACTION_SP",
+        description="Moisture extraction setpoint",
+        min_value=0,
+        max_value=100,
     ),
     # Analog Input values (Temperatures, CO2, RH)
     ModbusParameter(
