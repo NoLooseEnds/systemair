@@ -46,6 +46,7 @@ ENTITY_DESCRIPTIONS = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         registry=parameter_map["REG_SENSOR_OAT"],
+        icon="mdi:thermometer",
     ),
     SystemairSensorEntityDescription(
         key="extract_air_temperature",
@@ -53,6 +54,7 @@ ENTITY_DESCRIPTIONS = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         registry=parameter_map["REG_SENSOR_PDM_EAT_VALUE"],
+        icon="mdi:thermometer",
     ),
     SystemairSensorEntityDescription(
         key="supply_air_temperature",
@@ -60,6 +62,7 @@ ENTITY_DESCRIPTIONS = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         registry=parameter_map["REG_SENSOR_SAT"],
+        icon="mdi:thermometer",
     ),
     SystemairSensorEntityDescription(
         key="overheat_temperature",
@@ -67,6 +70,7 @@ ENTITY_DESCRIPTIONS = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         registry=parameter_map["REG_SENSOR_OHT"],
+        icon="mdi:thermometer-alert",
     ),
     SystemairSensorEntityDescription(
         key="extract_air_relative_humidity",
@@ -74,6 +78,7 @@ ENTITY_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
         registry=parameter_map["REG_SENSOR_RHS_PDM"],
+        icon="mdi:water-percent",
     ),
     SystemairSensorEntityDescription(
         key="efficiency_temperature",
@@ -81,6 +86,7 @@ ENTITY_DESCRIPTIONS = (
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         registry=parameter_map["REG_SENSOR_EFFICIENCY_TEMP"],
+        icon="mdi:thermometer",
     ),
     SystemairSensorEntityDescription(
         key="overheat_temperature_alt",
@@ -137,6 +143,7 @@ ENTITY_DESCRIPTIONS = (
         native_unit_of_measurement="m³/h",
         registry=parameter_map["REG_OUTPUT_SAF_POWER_FACTOR"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:air-filter",
     ),
     SystemairSensorEntityDescription(
         key="exhaust_air_flow_rate",
@@ -145,6 +152,7 @@ ENTITY_DESCRIPTIONS = (
         native_unit_of_measurement="m³/h",
         registry=parameter_map["REG_OUTPUT_EAF"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:air-filter",
     ),
     SystemairSensorEntityDescription(
         key="recovery_rate",
@@ -153,6 +161,7 @@ ENTITY_DESCRIPTIONS = (
         native_unit_of_measurement=PERCENTAGE,
         registry=parameter_map["REG_SENSOR_SAT"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:heat-wave",
     ),
     SystemairSensorEntityDescription(
         key="meter_saf_rpm",
@@ -160,6 +169,7 @@ ENTITY_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         registry=parameter_map["REG_SENSOR_RPM_SAF"],
+        icon="mdi:fan",
     ),
     SystemairSensorEntityDescription(
         key="meter_saf_reg_speed",
@@ -167,6 +177,7 @@ ENTITY_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
         registry=parameter_map["REG_OUTPUT_SAF"],
+        icon="mdi:fan-speed-1",
     ),
     SystemairSensorEntityDescription(
         key="meter_eaf_rpm",
@@ -174,6 +185,7 @@ ENTITY_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
         registry=parameter_map["REG_SENSOR_RPM_EAF"],
+        icon="mdi:fan",
     ),
     SystemairSensorEntityDescription(
         key="meter_eaf_reg_speed",
@@ -181,6 +193,7 @@ ENTITY_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
         registry=parameter_map["REG_OUTPUT_EAF"],
+        icon="mdi:fan-speed-1",
     ),
     SystemairSensorEntityDescription(
         key="heater_output_value",
@@ -188,6 +201,7 @@ ENTITY_DESCRIPTIONS = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=PERCENTAGE,
         registry=parameter_map["REG_PWM_TRIAC_OUTPUT"],
+        icon="mdi:radiator",
     ),
     SystemairSensorEntityDescription(
         key="filter_remaining_time",
@@ -197,6 +211,7 @@ ENTITY_DESCRIPTIONS = (
         native_unit_of_measurement=UnitOfTime.SECONDS,
         registry=parameter_map["REG_FILTER_REMAINING_TIME_L"],
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:air-filter",
     ),
     SystemairSensorEntityDescription(
         key="mode_remaining_time",
@@ -206,36 +221,42 @@ ENTITY_DESCRIPTIONS = (
         native_unit_of_measurement=UnitOfTime.SECONDS,
         registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:timer",
     ),
     SystemairSensorEntityDescription(
         key="countdown_away",
         translation_key="countdown_away",
         registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:exit-run",
     ),
     SystemairSensorEntityDescription(
         key="countdown_crowded",
         translation_key="countdown_crowded",
         registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:account-multiple",
     ),
     SystemairSensorEntityDescription(
         key="countdown_refresh",
         translation_key="countdown_refresh",
         registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:fan-plus",
     ),
     SystemairSensorEntityDescription(
         key="countdown_fireplace",
         translation_key="countdown_fireplace",
         registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:fireplace",
     ),
     SystemairSensorEntityDescription(
         key="countdown_holiday",
         translation_key="countdown_holiday",
         registry=parameter_map["REG_USERMODE_REMAINING_TIME_L"],  # Base register, but we'll compute the value
         entity_category=EntityCategory.DIAGNOSTIC,
+        icon="mdi:bag-suitcase",
     ),
     *(
         SystemairSensorEntityDescription(

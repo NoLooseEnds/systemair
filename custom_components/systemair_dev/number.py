@@ -37,6 +37,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTime.DAYS,
         registry=parameter_map["REG_USERMODE_HOLIDAY_TIME"],
+        icon="mdi:bag-suitcase",
     ),
     SystemairNumberEntityDescription(
         key="time_delay_away",
@@ -47,6 +48,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTime.HOURS,
         registry=parameter_map["REG_USERMODE_AWAY_TIME"],
+        icon="mdi:exit-run",
     ),
     SystemairNumberEntityDescription(
         key="time_delay_fireplace",
@@ -57,6 +59,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTime.MINUTES,
         registry=parameter_map["REG_USERMODE_FIREPLACE_TIME"],
+        icon="mdi:fireplace",
     ),
     SystemairNumberEntityDescription(
         key="time_delay_refresh",
@@ -67,6 +70,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTime.MINUTES,
         registry=parameter_map["REG_USERMODE_REFRESH_TIME"],
+        icon="mdi:fan-plus",
     ),
     SystemairNumberEntityDescription(
         key="time_delay_crowded",
@@ -77,6 +81,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTime.HOURS,
         registry=parameter_map["REG_USERMODE_CROWDED_TIME"],
+        icon="mdi:account-multiple",
     ),
     SystemairNumberEntityDescription(
         key="eco_heat_offset",
@@ -86,6 +91,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
         registry=parameter_map["REG_ECO_HEAT_OFFSET"],
+        icon="mdi:thermometer",
     ),
     SystemairNumberEntityDescription(
         key="filter_replacement_period",
@@ -95,6 +101,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement="months",
         registry=parameter_map["REG_FILTER_REPLACEMENT_PERIOD"],
+        icon="mdi:air-filter",
     ),
     SystemairNumberEntityDescription(
         key="moisture_extraction_setpoint",
@@ -104,6 +111,7 @@ NUMBERS: tuple[SystemairNumberEntityDescription, ...] = (
         mode=NumberMode.SLIDER,
         native_unit_of_measurement=PERCENTAGE,
         registry=parameter_map["REG_MOISTURE_EXTRACTION_SP"],
+        icon="mdi:water-percent",
     ),
 )
 

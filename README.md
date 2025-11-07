@@ -22,7 +22,7 @@ Platform | Description
 
 ### Using HACS
 
-1. Open HACS and go to "Custom integrations". Enter the URL `https://github.com/tesharp/systemair`, choose type Integration and click Add. 
+1. Open HACS and go to "Custom integrations". Enter the URL `https://github.com/NoLooseEnds/systemair`, choose type Integration and click Add. 
 2. Restart Home Assistant
 3. Go to settings and add new integration. You will find Systemair in the list of available integrations. 
 
@@ -30,11 +30,11 @@ Platform | Description
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 1. If you do not have a `custom_components` directory (folder) there, you need to create it.
-1. In the `custom_components` directory (folder) create a new folder called `systemair`.
-1. Download _all_ the files from the `custom_components/systemair/` directory (folder) in this repository.
+1. In the `custom_components` directory (folder) create a new folder called `systemair_dev`.
+1. Download _all_ the files from the `custom_components/systemair_dev/` directory (folder) in this repository.
 1. Place the files you downloaded in the new directory (folder) you created.
 1. Restart Home Assistant
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Systemair"
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Systemair Dev"
 
 ## Configuration is done in the UI
 
@@ -48,12 +48,12 @@ If you want to contribute to this please read the [Contribution guidelines](CONT
 
 [buymecoffee]: https://buymeacoffee.com/tesharp
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
-[commits-shield]: https://img.shields.io/github/commit-activity/y/tesharp/systemair.svg?style=for-the-badge
-[commits]: https://github.com/tesharp/systemair/commits/main
+[commits-shield]: https://img.shields.io/github/commit-activity/y/NoLooseEnds/systemair.svg?style=for-the-badge
+[commits]: https://github.com/NoLooseEnds/systemair/commits/main
 [systemair]: https://www.systemair.com/no-no/produkter/boligventilasjon/ventilasjonsaggregater/latest-residential-ventilation-products#saveconnect
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/tesharp/systemair.svg?style=for-the-badge
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Joakim%20Sørensen%20%40ludeeus-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/tesharp/systemair.svg?style=for-the-badge
-[releases]: https://github.com/tesharp/systemair/releases
+[releases-shield]: https://img.shields.io/github/release/NoLooseEnds/systemair.svg?style=for-the-badge
+[releases]: https://github.com/NoLooseEnds/systemair/releases

@@ -2,5 +2,7 @@
     "name": "systemair-dev",
     "hide_default_branch": true,
     "homeassistant": "2024.8.0",
-    "render_readme": true
+    "render_readme": true,
+    "country": ["NO", "SE", "DK", "FI", "US", "CA", "GB", "DE", "FR", "ES", "IT", "NL", "BE", "AT", "CH", "PL", "CZ", "AU", "NZ"],
+    "domains": ["climate", "sensor", "binary_sensor", "switch", "number"]
 }

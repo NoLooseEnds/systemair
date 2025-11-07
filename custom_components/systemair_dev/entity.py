@@ -19,6 +19,7 @@ class SystemairEntity(CoordinatorEntity[SystemairDataUpdateCoordinator]):
         super().__init__(coordinator)
         self._attr_unique_id = coordinator.config_entry.entry_id
         self._attr_device_info = DeviceInfo(
+            name=f"Systemair {coordinator.config_entry.runtime_data.mb_model or 'Ventilation Unit'}",
             manufacturer="Systemair",
             model=coordinator.config_entry.runtime_data.mb_model,
             hw_version=coordinator.config_entry.runtime_data.mb_hw_version,
