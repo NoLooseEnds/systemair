@@ -131,6 +131,30 @@ ENTITY_DESCRIPTIONS = (
         registry=parameter_map["REG_USERMODE_MODE"],  # Use mode register as base, but we'll compute the value
     ),
     SystemairSensorEntityDescription(
+        key="supply_air_flow_rate",
+        translation_key="supply_air_flow_rate",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="m³/h",
+        registry=parameter_map["REG_OUTPUT_SAF_POWER_FACTOR"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="exhaust_air_flow_rate",
+        translation_key="exhaust_air_flow_rate",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement="m³/h",
+        registry=parameter_map["REG_OUTPUT_EAF"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="recovery_rate",
+        translation_key="recovery_rate",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        registry=parameter_map["REG_SENSOR_SAT"],  # Base register, but we'll compute the value
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
         key="meter_saf_rpm",
         translation_key="meter_saf_rpm",
         state_class=SensorStateClass.MEASUREMENT,
@@ -227,6 +251,17 @@ class SystemairSensor(SystemairEntity, SensorEntity):
         if self.entity_description.key == "enhanced_mode_status":
             return self._get_enhanced_mode_status()
 
+        # Calculated flow rates
+        if self.entity_description.key == "supply_air_flow_rate":
+            return self._get_supply_air_flow_rate()
+
+        if self.entity_description.key == "exhaust_air_flow_rate":
+            return self._get_exhaust_air_flow_rate()
+
+        # Calculated recovery rate
+        if self.entity_description.key == "recovery_rate":
+            return self._get_recovery_rate()
+
         value = self.coordinator.get_modbus_data(
             self.entity_description.registry,
             default=None,
@@ -241,6 +276,64 @@ class SystemairSensor(SystemairEntity, SensorEntity):
             return VALUE_MAP_TO_ALARM_STATE.get(value, "Inactive")
 
         return str(value)
+
+    def _get_supply_air_flow_rate(self) -> str:
+        """Calculate supply air flow rate from fan power factor."""
+        power_factor = self.coordinator.get_modbus_data(
+            parameter_map["REG_OUTPUT_SAF_POWER_FACTOR"],
+            default=None,
+            log_missing=False,
+        )
+        if power_factor is None:
+            # Fallback to REG_OUTPUT_SAF if power factor not available
+            power_factor = self.coordinator.get_modbus_data(
+                parameter_map["REG_OUTPUT_SAF"],
+                default=0,
+                log_missing=False,
+            )
+        flow_rate = round(float(power_factor) * 3, 0)
+        return str(int(flow_rate))
+
+    def _get_exhaust_air_flow_rate(self) -> str:
+        """Calculate exhaust air flow rate from fan power factor."""
+        power_factor = self.coordinator.get_modbus_data(
+            parameter_map["REG_OUTPUT_EAF"],
+            default=0,
+            log_missing=False,
+        )
+        flow_rate = round(float(power_factor) * 3, 0)
+        return str(int(flow_rate))
+
+    def _get_recovery_rate(self) -> str:
+        """Calculate heat recovery rate from temperatures."""
+        supply_temp = self.coordinator.get_modbus_data(
+            parameter_map["REG_SENSOR_SAT"],
+            default=None,
+            log_missing=False,
+        )
+        outdoor_temp = self.coordinator.get_modbus_data(
+            parameter_map["REG_SENSOR_OAT"],
+            default=None,
+            log_missing=False,
+        )
+        exhaust_temp = self.coordinator.get_modbus_data(
+            parameter_map["REG_SENSOR_PDM_EAT_VALUE"],
+            default=None,
+            log_missing=False,
+        )
+
+        if supply_temp is None or outdoor_temp is None or exhaust_temp is None:
+            return None
+
+        # Avoid division by zero
+        temp_diff = float(exhaust_temp) - float(outdoor_temp)
+        if abs(temp_diff) < 0.1:
+            return "0"
+
+        recovery_rate = (
+            ((float(supply_temp) - float(outdoor_temp)) / temp_diff) * 100
+        )
+        return str(round(recovery_rate, 1))
 
     def _get_enhanced_mode_status(self) -> str:
         """Get enhanced mode status by combining mode register with manual command register."""
