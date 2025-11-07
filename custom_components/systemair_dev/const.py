@@ -5,7 +5,7 @@ from logging import Logger, getLogger
 
 LOGGER: Logger = getLogger(__package__)
 
-DOMAIN = "systemair"
+DOMAIN = "systemair_dev"
 ATTRIBUTION = "Data provided by Systemair SAVE Connect."
 
 MAX_TEMP = 30

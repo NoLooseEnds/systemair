@@ -1,0 +1,12 @@
+{
+  "domain": "systemair_dev",
+  "name": "Systemair Dev",
+  "codeowners": [
+    "@NoLooseEnds"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/NoLooseEnds/systemair",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/NoLooseEnds/systemair/issues",
+  "version": "0.1.0"
+}
