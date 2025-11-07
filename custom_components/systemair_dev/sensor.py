@@ -113,6 +113,24 @@ ENTITY_DESCRIPTIONS = (
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SystemairSensorEntityDescription(
+        key="mode_status_register",
+        translation_key="mode_status_register",
+        registry=parameter_map["REG_USERMODE_MODE"],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="manual_mode_command",
+        translation_key="manual_mode_command",
+        registry=parameter_map["REG_USERMODE_MANUAL_COMMAND"],
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SystemairSensorEntityDescription(
+        key="enhanced_mode_status",
+        translation_key="enhanced_mode_status",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        registry=parameter_map["REG_USERMODE_MODE"],  # Use mode register as base, but we'll compute the value
+    ),
+    SystemairSensorEntityDescription(
         key="meter_saf_rpm",
         translation_key="meter_saf_rpm",
         state_class=SensorStateClass.MEASUREMENT,
@@ -205,6 +223,10 @@ class SystemairSensor(SystemairEntity, SensorEntity):
     @property
     def native_value(self) -> str | None:
         """Return the native value of the sensor."""
+        # Enhanced mode status combines mode register with manual command register
+        if self.entity_description.key == "enhanced_mode_status":
+            return self._get_enhanced_mode_status()
+
         value = self.coordinator.get_modbus_data(
             self.entity_description.registry,
             default=None,
@@ -219,3 +241,65 @@ class SystemairSensor(SystemairEntity, SensorEntity):
             return VALUE_MAP_TO_ALARM_STATE.get(value, "Inactive")
 
         return str(value)
+
+    def _get_enhanced_mode_status(self) -> str:
+        """Get enhanced mode status by combining mode register with manual command register."""
+        mode_register = self.coordinator.get_modbus_data(
+            parameter_map["REG_USERMODE_MODE"],
+            default=0,
+            log_missing=False,
+        )
+        manual_command = self.coordinator.get_modbus_data(
+            parameter_map["REG_USERMODE_MANUAL_COMMAND"],
+            default=0,
+            log_missing=False,
+        )
+
+        mode = int(mode_register)
+        manual = int(manual_command)
+
+        # Enhanced mode detection based on repo2_nonhacs logic
+        if mode == 0:  # Auto mode
+            if manual == 2:
+                return "Auto schedule - Low"
+            if manual == 3:
+                return "Auto schedule - Normal"
+            if manual == 4:
+                return "Auto schedule - High"
+            return "Auto schedule - Normal"
+        if mode == 1:  # Manual mode
+            if manual == 0:
+                return "Manual STOP"
+            if manual == 1:
+                return "Manual Unknown"  # Shouldn't normally occur
+            if manual == 2:
+                return "Manual Low"
+            if manual == 3:
+                return "Manual Normal"
+            if manual == 4:
+                return "Manual High"
+            return "Manual"
+        if mode == 2:
+            return "Crowded"
+        if mode == 3:
+            return "Refresh"
+        if mode == 4:
+            return "Fireplace"
+        if mode == 5:
+            return "Away"
+        if mode == 6:
+            return "Holiday"
+        if mode == 7:
+            return "Cooker Hood"
+        if mode == 8:
+            return "Vacuum Cleaner"
+        if mode == 9:
+            return "CDI1"
+        if mode == 10:
+            return "CDI2"
+        if mode == 11:
+            return "CDI3"
+        if mode == 12:
+            return "Pressure Guard"
+
+        return f"Unknown ({mode})"

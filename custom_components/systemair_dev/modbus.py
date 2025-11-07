@@ -389,6 +389,18 @@ parameters_list = [
         max_value=4,
     ),
     ModbusParameter(
+        register=1130,
+        sig=IntegerType.UINT,
+        reg_type=RegisterType.Holding,
+        short="REG_USERMODE_MANUAL_COMMAND",
+        description=(
+            "Manual mode command register.\n0: Off(1)\n2: Low\n3: Normal\n4: High\n"
+            "(1): value Off only allowed if contents of register REG_FAN_MANUAL_STOP_ALLOWED is 1."
+        ),
+        min_value=0,
+        max_value=4,
+    ),
+    ModbusParameter(
         register=14001,
         sig=IntegerType.UINT,
         reg_type=RegisterType.Input,
