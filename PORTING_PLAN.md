@@ -457,3 +457,13 @@ def get_modbus_data(self, register: ModbusParameter) -> float:
 - Firmware versions may affect register availability
 - Always test register reads/writes before assuming they work
 - Provide fallback behavior for unknown models or missing registers
+
+## Testing Limitations
+
+**⚠️ IMPORTANT**: Only VSR-300 unit is available for testing.
+
+- VSR-300 features can be fully tested and verified
+- VTR-500 specific features from repo2_nonhacs cannot be tested
+- VTR-300 features cannot be tested
+- Register addresses for VTR-500/VTR-300 should be verified when hardware becomes available
+- VTR-500 specific sensors should be marked as "untested" or "VTR-500 only" in code comments
